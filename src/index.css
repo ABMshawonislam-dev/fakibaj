@@ -1,0 +1,62 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+.registration{
+  display: flex;
+
+}
+
+.registration .left{
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  justify-content: end;
+  
+
+}
+
+.registration .left .text-container{
+    width: 60%;
+    margin-top: 100px;
+}
+
+.registration .left .text-container p{
+  margin-bottom: 50px;
+}
+
+.registration .right{
+  width: 50%;
+  height: 100vh;
+
+}
+
+.registration .bg{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inputCss{
+  width: 90%;
+  margin: 15px 0 !important;
+}
+
+.regbtn{
+  width: 90%;
+  padding: 15px 0 !important;
+  border-radius: 50px !important;
+  margin-top: 20px !important;
+}
+
+.focus{
+  font-weight: bold;
+  color: orange;
+}
+
+.eye{
+      position: relative;
+    top: 35px;
+    right: 30px;
+}
