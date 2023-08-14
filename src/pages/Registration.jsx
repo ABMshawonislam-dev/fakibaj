@@ -3,14 +3,20 @@ import bg from "../assets/registrationbg.png"
 import Image from '../components/Image'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { Link,useNavigate } from 'react-router-dom';
+import { getAuth, createUserWithEmailAndPassword,sendEmailVerification  } from "firebase/auth";
 import Alert from '@mui/material/Alert';
 import { AiFillEye,AiFillEyeInvisible } from 'react-icons/ai';
+import { RotatingLines } from 'react-loader-spinner'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 
 const Registration = () => {
     const auth = getAuth();
+    let navigate = useNavigate()
     let [formData,setFormData] = useState({
         fullname:"",
         email:"",
@@ -21,6 +27,7 @@ const Registration = () => {
     let [emailError,setEmailError] = useState("")
     let [passwordError,setPasswordError] = useState("")
     let [open,setOpen] = useState(false)
+    let [load,setLoad] = useState(false)
 
     let handleChange = (e)=>{
         setFormData({
@@ -56,22 +63,59 @@ const Registration = () => {
 
         if(formData.email && formData.fullname && formData.password){
 
-            let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-            // let re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+            
+            setLoad(true)
+            createUserWithEmailAndPassword(auth, formData.email, formData.password).then(()=>{
 
-            // if(!pattern.test(formData.email)){
-            //     setEmailError("Invalid Email")
-            // }
 
-            // if(formData.fullname.length < 3){
-            //     setFullName("Fullname must be 3character")
-            // }
+                sendEmailVerification(auth.currentUser).then(()=>{
+                    setFormData({
+                        fullname:"",
+                        email:"",
+                        password:""
+                    })
+                    setLoad(false)
+                    toast.success('🦄Rregistration Successfull! PLease verify your email', {
+                        position: "bottom-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        });
 
-            // if(!re.test(formData.password)){
-            //     setPasswordError("Password not strong")
-            // }
+                setTimeout(()=>{
+                    navigate("/login")
+                },1000)
+                })
 
-            console.log("asdfsdfwerwttytyuhdfgdfgdhg")
+
+                
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                if(errorCode.includes("email")){
+                    setEmailError("Email Already Exists")
+                    toast.error('Email Already Exists', {
+                        position: "bottom-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        });
+                }
+                // setEmailError(errorCode)
+              
+                setLoad(false)
+
+               
+              });
         }
 
 
@@ -86,18 +130,18 @@ const Registration = () => {
             <div className='text-container'>
                 <h2>Get started with easily register</h2>
                 <p>Free register and you can enjoy it</p>
-                <TextField onChange={handleChange} name="fullname" className='inputCss ' type='text' id="outlined-basic" label="Full Name" variant="outlined" />
+                <TextField onChange={handleChange} name="fullname" className='inputCss ' type='text' id="outlined-basic" label="Full Name" variant="outlined" value={formData.fullname}/>
                 {fullnameError && 
                 <Alert variant="filled" severity="error">
                     {fullnameError}
                 </Alert>}
-                <TextField onChange={handleChange} name="email" className='inputCss' type='email' id="outlined-basic" label="Email" variant="outlined" />
+                <TextField onChange={handleChange} name="email" className='inputCss' type='email' id="outlined-basic" label="Email" variant="outlined" value={formData.email}/>
                  {emailError && 
                 <Alert variant="filled" severity="error">
                     {emailError}
                 </Alert>}
                 <div>
-                <TextField onChange={handleChange} name="password" className='inputCss' type={open? "text":'password'} id="outlined-basic" label="Password" variant="outlined" />
+                <TextField onChange={handleChange} name="password" className='inputCss' type={open? "text":'password'} id="outlined-basic" label="Password" variant="outlined" value={formData.password}/>
                 {open 
                 ?
                 <AiFillEye onClick={()=>setOpen(false)} className='eye'/>
@@ -111,7 +155,24 @@ const Registration = () => {
                 <Alert variant="filled" severity="error">
                     {passwordError}
                 </Alert>}
-                <Button onClick={handleRegistration} className='regbtn' variant="contained">Sign up</Button>
+                {load
+                ?
+                <Button className='regbtn' variant="contained" >
+                    <RotatingLines
+                        strokeColor="white"
+                        strokeWidth="2"
+                        animationDuration="0.75"
+                        width="20"
+                        visible={true}
+                        />
+                </Button>
+                :
+                <Button onClick={handleRegistration} className='regbtn' variant="contained">
+                    Sign up
+                 
+                </Button>
+                }
+                
                 <p>Alredy have an account ? <Link to="/login" className='focus'>Sign In</Link></p>
                 
             </div>
