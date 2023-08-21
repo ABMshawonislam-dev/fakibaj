@@ -5,10 +5,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Link,useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup  } from "firebase/auth";
 
 const Login = () => {
   const auth = getAuth();
+  const provider = new GoogleAuthProvider();
   let navigate = useNavigate()
   let [formData,setFormData] = useState({
     email:"",
@@ -45,16 +46,26 @@ let handleLogin = ()=>{
 
   })
 }
+
+
+let handleGoogleLogin = ()=>{
+  signInWithPopup(auth, provider).then(()=>{
+    navigate("/home")
+  })
+}
   return (
     <div className='registration'>
         <div className='left'>
             <div className='text-container'>
                 <h2>Get started with easily register</h2>
                 <p>Free register and you can enjoy it</p>
+                <Button onClick={handleGoogleLogin}  className='regbtn' variant="contained">Google Sign In</Button>
                 <TextField onChange={handleChange} name="email" className='inputCss' type='email' id="outlined-basic" label="Email" variant="outlined" />
                 <TextField onChange={handleChange} name="password" className='inputCss' type='password' id="outlined-basic" label="Password" variant="outlined" />
                 <Button onClick={handleLogin} className='regbtn' variant="contained">Sign In</Button>
                 <p>Don’t have an account ? <Link to="/" className='focus'>Sign up</Link></p>
+
+                <p>Forgot Password ? <Link to="/forgotpassword" className='focus'>Click Here</Link></p>
                 
             </div>
         </div>
@@ -66,3 +77,4 @@ let handleLogin = ()=>{
 }
 
 export default Login
+
