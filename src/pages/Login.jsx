@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import bg from "../assets/registrationbg.png"
 import Image from '../components/Image'
 import TextField from '@mui/material/TextField';
@@ -6,15 +6,33 @@ import Button from '@mui/material/Button';
 import { Link,useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup  } from "firebase/auth";
+import { useDispatch,useSelector } from 'react-redux';
+import { logeduser } from '../slices/userSlice';
 
 const Login = () => {
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
   let navigate = useNavigate()
+  let dispatch = useDispatch()
+
+  let data = useSelector(state=> state.logedUser.value)
+  console.log("asdasd",data)
+    
+    useEffect(()=>{
+      if(data){
+        console.log(data)
+        navigate("/home")
+      }
+    },[])
+
+
+
   let [formData,setFormData] = useState({
     email:"",
     password:""
   })
+
+
 
   let handleChange = (e)=>{
     setFormData({
@@ -31,6 +49,8 @@ let handleLogin = ()=>{
     console.log(user.user.emailVerified)
     if(user.user.emailVerified){
       navigate("/home")
+      dispatch(logeduser(user.user))
+      localStorage.setItem("user",JSON.stringify(user.user))
     }else{
       toast.error('Please verify your email for login', {
         position: "bottom-center",
