@@ -4,6 +4,13 @@ import { getAuth, signOut } from "firebase/auth";
 import { Link,useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 import { logeduser } from '../slices/userSlice';
+import Grid from '@mui/material/Grid';
+import Grouplist from '../components/Grouplist';
+import Friendrequest from '../components/Friendrequest';
+import Friends from '../components/Friends';
+import Mygroup from '../components/Mygroup';
+import Userlist from '../components/Userlist';
+import Block from '../components/Block';
 
 const Home = () => {
     const auth = getAuth();
@@ -28,6 +35,23 @@ const Home = () => {
   return (
     <>
 
+    <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <Grouplist/>
+          <Friendrequest/>
+        </Grid>
+        <Grid item xs={4}>
+          <Friends/>
+          <Mygroup/>
+        </Grid>
+        <Grid item xs={4}>
+          <Userlist/>
+          <Block/>
+        </Grid>
+    </Grid>
+        
+        
+   
     <Button onClick={handleLogOut} variant="contained">Logout</Button>
     </>
   )

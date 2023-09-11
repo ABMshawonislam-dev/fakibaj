@@ -4,7 +4,8 @@ import Image from '../components/Image'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Link,useNavigate } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword,sendEmailVerification  } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword,sendEmailVerification,updateProfile   } from "firebase/auth";
+import { getDatabase, ref, set,push } from "firebase/database";
 import Alert from '@mui/material/Alert';
 import { AiFillEye,AiFillEyeInvisible } from 'react-icons/ai';
 import { RotatingLines } from 'react-loader-spinner'
@@ -16,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Registration = () => {
     const auth = getAuth();
+    const db = getDatabase();
     let navigate = useNavigate()
     let [formData,setFormData] = useState({
         fullname:"",
@@ -67,29 +69,40 @@ const Registration = () => {
             setLoad(true)
             createUserWithEmailAndPassword(auth, formData.email, formData.password).then(()=>{
 
-
-                sendEmailVerification(auth.currentUser).then(()=>{
-                    setFormData({
-                        fullname:"",
-                        email:"",
-                        password:""
+                updateProfile(auth.currentUser, {
+                    displayName: formData.fullname, 
+                    photoURL: "https://firebasestorage.googleapis.com/v0/b/fakibaji-4aabb.appspot.com/o/a.png?alt=media&token=e37e315f-cdcd-4c71-ab88-dd50d31169d3"
+                  }).then(()=>{
+                    sendEmailVerification(auth.currentUser).then(()=>{
+                        setFormData({
+                            fullname:"",
+                            email:"",
+                            password:""
+                        })
+                        setLoad(false)
+                        toast.success('🦄Rregistration Successfull! PLease verify your email', {
+                            position: "bottom-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "dark",
+                            });
+                            
+                    setTimeout(()=>{
+                        navigate("/login")
+                    },1000)
+                    }).then(()=>{
+                        set(push(ref(db, 'users')), {
+                            username: formData.fullname,
+                            email: formData.email,
+                            profile_picture : "https://firebasestorage.googleapis.com/v0/b/fakibaji-4aabb.appspot.com/o/a.png?alt=media&token=e37e315f-cdcd-4c71-ab88-dd50d31169d3"
+                          });
                     })
-                    setLoad(false)
-                    toast.success('🦄Rregistration Successfull! PLease verify your email', {
-                        position: "bottom-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                        });
-
-                setTimeout(()=>{
-                    navigate("/login")
-                },1000)
-                })
+                  })
+                
 
 
                 

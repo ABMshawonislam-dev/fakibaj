@@ -6,12 +6,14 @@ import Button from '@mui/material/Button';
 import { Link,useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup  } from "firebase/auth";
+import { getDatabase, ref, set,push } from "firebase/database";
 import { useDispatch,useSelector } from 'react-redux';
 import { logeduser } from '../slices/userSlice';
 
 const Login = () => {
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
+  const db = getDatabase();
   let navigate = useNavigate()
   let dispatch = useDispatch()
 
@@ -46,31 +48,38 @@ const Login = () => {
 let handleLogin = ()=>{
 
   signInWithEmailAndPassword(auth, formData.email, formData.password).then((user)=>{
-    console.log(user.user.emailVerified)
-    if(user.user.emailVerified){
+    // if(user.user.emailVerified){
       navigate("/home")
       dispatch(logeduser(user.user))
       localStorage.setItem("user",JSON.stringify(user.user))
-    }else{
-      toast.error('Please verify your email for login', {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        });
-    }
+    // }
+    // else{
+    //   toast.error('Please verify your email for login', {
+    //     position: "bottom-center",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "dark",
+    //     });
+    // }
 
   })
 }
 
 
 let handleGoogleLogin = ()=>{
-  signInWithPopup(auth, provider).then(()=>{
+  signInWithPopup(auth, provider).then((user)=>{
     navigate("/home")
+    dispatch(logeduser(user.user))
+    localStorage.setItem("user",JSON.stringify(user.user))
+    set(push(ref(db, 'users')), {
+      username: user.user.displayName,
+      email: user.user.email,
+      profile_picture : user.user.photoURL
+    });
   })
 }
   return (
