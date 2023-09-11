@@ -67,7 +67,7 @@ const Registration = () => {
 
             
             setLoad(true)
-            createUserWithEmailAndPassword(auth, formData.email, formData.password).then(()=>{
+            createUserWithEmailAndPassword(auth, formData.email, formData.password).then((user)=>{
 
                 updateProfile(auth.currentUser, {
                     displayName: formData.fullname, 
@@ -95,7 +95,8 @@ const Registration = () => {
                         navigate("/login")
                     },1000)
                     }).then(()=>{
-                        set(push(ref(db, 'users')), {
+                        console.log(user.user.uid)
+                        set(ref(db, 'users/'+user.user.uid), {
                             username: formData.fullname,
                             email: formData.email,
                             profile_picture : "https://firebasestorage.googleapis.com/v0/b/fakibaji-4aabb.appspot.com/o/a.png?alt=media&token=e37e315f-cdcd-4c71-ab88-dd50d31169d3"
