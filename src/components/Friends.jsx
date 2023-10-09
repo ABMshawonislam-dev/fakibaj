@@ -10,6 +10,7 @@ const Friends = () => {
   const db = getDatabase();
   let data = useSelector(state=> state.logedUser.value)
   let [reqList,setReqList] = useState([])
+  let [friendList,setFriendList] = useState([])
 
   useEffect(()=>{
     const friendrequesttRef = ref(db, 'friendrequest');
@@ -31,23 +32,48 @@ const Friends = () => {
     onValue(friendRef, (snapshot) => {
       let arr = []
       snapshot.forEach(item=>{
-
+        console.log("ami friend",item.val())
 
           arr.push({...item.val(),fid:item.key})
 
       })
-      setReqList(arr)
+      setFriendList(arr)
     });
   },[])
+
+  let handleBlock = (item)=>{
+
+    if(data.uid == item.whosendid){
+       set(push(ref(db, 'block')), {
+        blockid:item.whoreceiveid,
+        blockname: item.whoreceivename,
+        blockbyid: item.whosendid,
+        blockbyname: item.whosendname
+      }).then(()=>{
+        remove(ref(db,'friends/'+item.fid))
+      })
+    }
+    else{
+      set(push(ref(db, 'block')), {
+        blockid: item.whosendid,
+        blockname: item.whosendname,
+        blockbyid: item.whoreceiveid,
+        blockbyname: item.whoreceivename
+      }).then(()=>{
+        remove(ref(db,'friends/'+item.fid))
+      })
+
+    }
+  }
 
   return (
     <div className='box'>
     <h3>Friends</h3>
-    {reqList.map(item=>(
+    {friendList.map(item=>(
       <div className='list'>
     <img src={gimg}/>
     <h4>{item.whosendid == data.uid? item.whoreceivename:item.whosendname}</h4>
-    <Button variant="contained" color="error">Block</Button>
+    <Button variant="contained" color="error" onClick={()=>handleBlock(item)}>Block</Button>
     </div>
     ))}
     
