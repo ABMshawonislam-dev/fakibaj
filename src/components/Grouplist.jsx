@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import gimg from "../assets/img.png"
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -24,11 +24,28 @@ const style = {
 const Grouplist = () => {
   const db = getDatabase();
   const [open, setOpen] = useState(false);
+
   const [gname, setGname] = useState("");
   const [gtag, setGtag] = useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   let data = useSelector(state=> state.logedUser.value)
+  let [groupList,setGroupList] = useState([])
+
+  useEffect(()=>{
+    const groupRef = ref(db, 'group');
+    onValue(groupRef, (snapshot) => {
+      let arr = []
+      snapshot.forEach(item=>{
+        if(item.val().adminid != data.uid){
+
+          arr.push({...item.val(),gid:item.key})
+        }
+      })
+      setGroupList(arr)
+    });
+  },[])
 
   let handleCreateGroup = ()=>{
     console.log(gname,gtag)
@@ -42,60 +59,29 @@ const Grouplist = () => {
       })
   }
 
+  let handleGroupJoin = (item)=>{
+    console.log("join",item)
+    set(push(ref(db, 'grouprequest')), {
+      ...item,
+      whosendid: data.uid,
+      whosendname: data.displayName,
+    })
+  }
+
   return (
     <div className='box'>
         <h3>Groups List</h3>
         <Button onClick={handleOpen} variant="contained">Create Group</Button>
+
+      {groupList.map(item=>(
         <div className='list'>
         <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
+        <h4>{item.groupname}</h4>
+        <Button onClick={()=>handleGroupJoin(item)} variant="contained">Join</Button>
         </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
-        <div className='list'>
-        <img src={gimg}/>
-        <h4>Friends Reunion</h4>
-        <Button variant="contained">Join</Button>
-        </div>
+      ))}
+        
+        
         <Modal
         open={open}
         onClose={handleClose}

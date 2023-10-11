@@ -34,7 +34,12 @@ const Friends = () => {
       snapshot.forEach(item=>{
         console.log("ami friend",item.val())
 
+        if(item.val().whosendid == data.uid || item.val().whoreceiveid == data.uid){
           arr.push({...item.val(),fid:item.key})
+        }
+
+
+         
 
       })
       setFriendList(arr)
