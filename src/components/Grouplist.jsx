@@ -32,6 +32,7 @@ const Grouplist = () => {
 
   let data = useSelector(state=> state.logedUser.value)
   let [groupList,setGroupList] = useState([])
+  let [grList,setGrList] = useState([])
 
   useEffect(()=>{
     const groupRef = ref(db, 'group');
@@ -44,6 +45,22 @@ const Grouplist = () => {
         }
       })
       setGroupList(arr)
+    });
+  },[])
+
+  useEffect(()=>{
+    const groupRef = ref(db, 'grouprequest');
+    onValue(groupRef, (snapshot) => {
+      let arr = []
+      snapshot.forEach(item=>{
+
+        if(item.val().whosendid == data.uid){
+          arr.push(item.val().whosendid+item.val().gid)
+        }
+        
+      
+      })
+      setGrList(arr)
     });
   },[])
 
@@ -68,6 +85,25 @@ const Grouplist = () => {
     })
   }
 
+  let handleCancel = (item)=>{
+
+     const groupRef = ref(db, 'grouprequest');
+     let did = ""
+    onValue(groupRef, (snapshot) => {
+
+      snapshot.forEach(gitem=>{
+
+        if(item.gid == gitem.val().gid){
+          did = gitem.key
+        }
+
+      })
+
+      console.log(did)
+
+    });
+  }
+
   return (
     <div className='box'>
         <h3>Groups List</h3>
@@ -77,7 +113,18 @@ const Grouplist = () => {
         <div className='list'>
         <img src={gimg}/>
         <h4>{item.groupname}</h4>
+        {/* <h4>{JSON.stringify(grList)} == {JSON.stringify(data.uid)}</h4> */}
+
+        {grList.includes(data.uid+item.gid) 
+        ? 
+        
+        <>
+        <Button variant="contained" color='success'>P</Button>
+        <Button onClick={()=>handleCancel(item)}  variant="contained" color="error">Cancel</Button>
+        </>
+        :
         <Button onClick={()=>handleGroupJoin(item)} variant="contained">Join</Button>
+        }
         </div>
       ))}
         
