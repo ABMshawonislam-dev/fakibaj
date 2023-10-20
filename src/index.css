@@ -170,3 +170,117 @@ box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.2);
 .list:last-child{
   border-bottom: 0;
 }
+
+.msgbox{
+  background: #fff;
+ 
+ height: 100vh;
+  margin-top: 10px;
+  border-radius: 15px;
+  -webkit-box-shadow: 0px 0px 19px 0px rgba(0,0,0,0.2);
+-moz-box-shadow: 0px 0px 19px 0px rgba(0,0,0,0.2);
+box-shadow: 0px 0px 19px 0px rgba(0,0,0,0.2);
+padding: 20px;
+
+}
+
+.containermsg{
+  overflow-y: scroll;
+  height: 80vh;
+}
+
+.sendmsg{
+  display: flex;
+  justify-content: end;
+}
+
+.sendmsg p{
+  background: #5F35F5;
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 5px;
+  color: #fff;
+}
+
+.receivemsg p{
+  background: #F1F1F1;
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+.sendimg{
+  display: flex;
+  justify-content: end;
+}
+
+.sendimg .imgbox{
+  background: #5F35F5;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.sendimg img{
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+
+}
+
+.sendimg .__react_modal_image__medium_img{
+  width: auto;
+  height: auto;
+}
+
+.receiveimg .imgbox{
+  background: #F1F1F1;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.receiveimg img{
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+
+}
+
+.receiveimg .__react_modal_image__medium_img{
+  width: auto;
+  height: auto;
+}
+
+.sendaudio{
+  display: flex;
+  justify-content: end;
+}
+
+.sendvideo{
+  display: flex;
+  justify-content: end;
+}
+
+.msgfield{
+  border-top: 1px solid black;
+  width: 100%;
+  padding-top: 50px;
+  position: relative;
+}
+
+.msgfield .MuiTextField-root{
+  width: 80%;
+}
+
+.jisir{
+  position: absolute;
+  top: 70px;
+  right: 200px;
+}
+
+.emojiholder{
+  position: absolute;
+  top: -400%;
+  right: 200px;
+}
