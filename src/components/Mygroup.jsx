@@ -12,6 +12,7 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
+import { activeChat } from '../slices/activeChatSlice';
 
 const style = {
   position: 'absolute',
@@ -31,6 +32,7 @@ const Mygroup = () => {
   const [open, setOpen] = React.useState(false);
   const [gname,setGname]= useState("")
   const [grlist,setGrlist] = useState([])
+  let dispatch = useDispatch()
   const handleOpen = (item) => {
     setGname(item.groupname)
   
@@ -62,11 +64,26 @@ const Mygroup = () => {
       setGroupList(arr)
     });
   },[])
+
+  let handleActiveChat = (item)=>{
+    
+   
+      dispatch(activeChat({
+        type: "group",
+        activechatid: item.gid,
+        activechatname: item.groupname
+      }))
+  
+  
+
+  }
+
+
   return (
     <div className='box'>
     <h3>My Group</h3>
     {groupList.map(item=>(
-      <div className='list'>
+      <div className='list' onClick={()=>handleActiveChat(item)}>
     <img src={gimg}/>
     <h4>{item.groupname}</h4>
     <Button variant="contained" onClick={()=>handleOpen(item)}>RL</Button>

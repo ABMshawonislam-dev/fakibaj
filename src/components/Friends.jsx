@@ -3,6 +3,7 @@ import gimg from "../assets/img.png"
 import Button from '@mui/material/Button';
 import { getDatabase, ref, onValue,remove,set,push  } from "firebase/database";
 import { useDispatch,useSelector } from 'react-redux';
+import { activeChat } from '../slices/activeChatSlice';
 
 
 const Friends = () => {
@@ -11,6 +12,7 @@ const Friends = () => {
   let data = useSelector(state=> state.logedUser.value)
   let [reqList,setReqList] = useState([])
   let [friendList,setFriendList] = useState([])
+  let dispatch = useDispatch()
 
   useEffect(()=>{
     const friendrequesttRef = ref(db, 'friendrequest');
@@ -71,15 +73,36 @@ const Friends = () => {
     }
   }
 
+  let handleActiveChat = (item)=>{
+    
+    if(data.uid == item.whosendid){
+      dispatch(activeChat({
+        type: "single",
+        activechatid: item.whoreceiveid,
+        activechatname: item.whoreceivename
+      }))
+
+   
+    }else{
+      dispatch(activeChat({
+        type: "single",
+        activechatid: item.whosendid,
+        activechatname: item.whosendname
+      }))
+  
+    }
+
+  }
+
   return (
     <div className='box'>
     <h3>Friends</h3>
     {friendList.map(item=>(
-      <div className='list'>
-    <img src={gimg}/>
-    <h4>{item.whosendid == data.uid? item.whoreceivename:item.whosendname}</h4>
-    <Button variant="contained" color="error" onClick={()=>handleBlock(item)}>Block</Button>
-    </div>
+      <div className='list' onClick={()=>handleActiveChat(item)}>
+        <img src={gimg}/>
+        <h4>{item.whosendid == data.uid? item.whoreceivename:item.whosendname}</h4>
+        <Button variant="contained" color="error" onClick={()=>handleBlock(item)}>Block</Button>
+      </div>
     ))}
     
     
