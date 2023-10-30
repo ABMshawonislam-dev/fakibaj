@@ -11,10 +11,15 @@ import Friends from '../components/Friends';
 import Mygroup from '../components/Mygroup';
 import Userlist from '../components/Userlist';
 import Block from '../components/Block';
+import { getDatabase,ref, set,push,onValue  } from "firebase/database";
+import { activeChat } from '../slices/activeChatSlice';
 
 
 const Home = () => {
+
+
     const auth = getAuth();
+    const db = getDatabase();
     let navigate = useNavigate()
     let dispatch = useDispatch()
 
@@ -34,6 +39,23 @@ const Home = () => {
           navigate("/login")
           })
     }
+
+    useEffect(()=>{
+      const singleMsgRef = ref(db, 'lastmsg');
+      onValue(singleMsgRef, (snapshot) => {
+          snapshot.forEach(item=>{
+                  dispatch(activeChat({
+                    type: "single",
+                    activechatid: item.val().activechatid,
+                    activechatname: item.val().activechatname
+                  }))
+          })
+      
+      });
+  },[])
+
+
+
   return (
     <>
 

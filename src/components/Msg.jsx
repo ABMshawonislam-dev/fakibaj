@@ -21,6 +21,8 @@ const Msg = () => {
     let data = useSelector((state)=> state.activeChat.value)
     let userdata = useSelector(state=> state.logedUser.value)
 
+
+
     let handleMsgSend = ()=>{
        if(data.type == "single"){
         set(push(ref(db, 'signlemsg')), {
@@ -54,6 +56,7 @@ const Msg = () => {
     },[])
 
   return (
+    
     <div className='msgbox'>
         <h1>{data.activechatname}</h1>
         <div className="containermsg">

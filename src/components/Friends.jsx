@@ -35,21 +35,15 @@ const Friends = () => {
       let arr = []
       snapshot.forEach(item=>{
         console.log("ami friend",item.val())
-
         if(item.val().whosendid == data.uid || item.val().whoreceiveid == data.uid){
           arr.push({...item.val(),fid:item.key})
         }
-
-
-         
-
       })
       setFriendList(arr)
     });
   },[])
 
   let handleBlock = (item)=>{
-
     if(data.uid == item.whosendid){
        set(push(ref(db, 'block')), {
         blockid:item.whoreceiveid,
@@ -82,6 +76,12 @@ const Friends = () => {
         activechatname: item.whoreceivename
       }))
 
+      set(ref(db, 'lastmsg/'+item.whoreceiveid), {
+        type: "single",
+        activechatid: item.whoreceiveid,
+        activechatname: item.whoreceivename
+      })
+
    
     }else{
       dispatch(activeChat({
@@ -89,8 +89,15 @@ const Friends = () => {
         activechatid: item.whosendid,
         activechatname: item.whosendname
       }))
+
+      set(ref(db, 'lastmsg/'+item.whosendid), {
+        type: "single",
+        activechatid: item.whosendid,
+        activechatname: item.whosendname
+      })
   
     }
+
 
   }
 
