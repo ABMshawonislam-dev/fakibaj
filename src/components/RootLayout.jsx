@@ -6,11 +6,6 @@ import Sidebar from './Sidebar';
 
 const RootLayout = () => {
 
-
-  
-
-
-
   return (
     <>
     <Grid container spacing={2}>

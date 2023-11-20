@@ -1,5 +1,5 @@
 import React ,{useState,useRef,createRef}from 'react'
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import {AiFillHome,AiFillMessage,AiFillSetting,AiOutlineLogout} from "react-icons/ai"
 import {IoIosNotifications} from "react-icons/io"
 import { Link } from 'react-router-dom';
@@ -9,6 +9,9 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { getStorage, ref, uploadString ,getDownloadURL} from "firebase/storage";
+import { getDatabase, ref as secondref, set } from "firebase/database";
+import { logeduser } from '../slices/userSlice';
 
 const defaultSrc =
   "https://raw.githubusercontent.com/roadmanfong/react-cropper/master/example/img/child.jpg";
@@ -37,6 +40,11 @@ const [image, setImage] = useState(defaultSrc);
   const [cropData, setCropData] = useState("#");
   const cropperRef = createRef()
 
+  const storage = getStorage();
+  const db = getDatabase();
+  let dispatch = useDispatch()
+const storageRef = ref(storage, userInfo.uid);
+
   const onChange = (e) => {
     e.preventDefault();
     let files;
@@ -55,8 +63,31 @@ const [image, setImage] = useState(defaultSrc);
   const getCropData = () => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
       setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+      console.log(cropperRef.current?.cropper.getCroppedCanvas().toDataURL())
+      // Base64 formatted string
+      const message2 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
+      uploadString(storageRef, message2, 'data_url').then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          set(secondref(db, 'users/'+ userInfo.uid), {
+            username: userInfo.displayName,
+            email: userInfo.email,
+            profile_picture : downloadURL
+          }).then(()=>{
+            console.log("done")
+            localStorage.setItem("user",JSON.stringify({...userInfo,photoURL:downloadURL}))
+            dispatch(logeduser({...userInfo,photoURL:downloadURL}))
+          })
+        });
+      });
     }
+
+
   };
+
+  let handleCropData = ()=>{
+    getCropData()
+  }
 
 
 
@@ -110,6 +141,7 @@ const [image, setImage] = useState(defaultSrc);
                 autoCropArea={1}
                 guides={true}
             />
+            <Button onClick={handleCropData}>Done</Button>
      
             
         
